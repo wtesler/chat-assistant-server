@@ -75,6 +75,6 @@ async function hostDevelopment(app, port) {
 
 function hostProduction(app, port) {
   app.listen(port, () => {
-    console.log(`Server listening on http://localhost:${port}`);
+    console.log(`Production server listening on http://localhost:${port}`);
   });
 }
