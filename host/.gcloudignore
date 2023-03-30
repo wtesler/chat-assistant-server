@@ -16,8 +16,5 @@
 # Node.js dependencies:
 node_modules/
 /node_modules/
-host/node_modules/
 
 .eslintrc.json
-
-README.md
