@@ -13,7 +13,7 @@ class OpenAiClient {
     const headers = {
       Authorization: `Bearer ${this.apiKey}`
     };
-    const options = {response: 20000, deadline: 60000};
+    const options = {response: 30000, deadline: 60000};
 
     const response = await request('POST', '/v1/chat/completions', 'api.openai.com', body, headers, options);
 
