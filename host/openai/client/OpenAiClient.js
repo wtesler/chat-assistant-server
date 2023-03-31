@@ -3,17 +3,17 @@ class OpenAiClient {
     this.apiKey = apiKey;
   }
 
-  async updateChat(message) {
+  async updateChat(chats) {
     const request = require('https-client');
 
     const body = {
       model: 'gpt-3.5-turbo',
-      messages: [{role: 'user', content: `${message}`}]
+      messages: chats
     };
     const headers = {
       Authorization: `Bearer ${this.apiKey}`
     };
-    const options = {response: 30000, deadline: 60000};
+    const options = {response: 60000, deadline: 120000};
 
     const response = await request('POST', '/v1/chat/completions', 'api.openai.com', body, headers, options);
 

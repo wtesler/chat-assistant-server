@@ -1,14 +1,17 @@
-const {parameterError} = require("cranny");
-const updateChat = require("../updateChat");
 module.exports = async function (req, res) {
   const updateChat = require("../updateChat");
+  const {parameterError} = require("cranny");
 
-  const message = req.body.message;
-  if (!message) {
-    parameterError(message);
+  const chats = req.body.chats;
+  if (!chats) {
+    parameterError(req, true);
   }
 
-  const responseMessage = await updateChat(message);
+  if (!Array.isArray(chats) || chats.length === 0) {
+    parameterError(req, false);
+  }
+
+  const responseMessage = await updateChat(chats);
 
   return {
     message: responseMessage

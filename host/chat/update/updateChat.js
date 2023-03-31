@@ -1,13 +1,6 @@
-module.exports = async function (message) {
+module.exports = async function (chats) {
   const openAiClient = await require("../../openai/client/OpenAiClient");
 
-  try {
-    const responseMessage = openAiClient.updateChat(message);
-    return responseMessage
-  } catch (e) {
-    console.error(e.message)
-    console.error(e.code)
-    console.error(e.statusCode)
-    throw e
-  }
+  const responseMessage = openAiClient.updateChat(chats);
+  return responseMessage
 }
