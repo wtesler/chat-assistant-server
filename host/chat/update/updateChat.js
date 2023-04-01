@@ -1,6 +1,7 @@
-module.exports = async function (chats) {
+module.exports = async function (chats, res) {
   const openAiClient = await require("../../openai/client/OpenAiClient");
 
-  const responseMessage = openAiClient.updateChat(chats);
-  return responseMessage
+  for await (const tokens of openAiClient.updateChatAsync(chats)) {
+    res.write(tokens)
+  }
 }

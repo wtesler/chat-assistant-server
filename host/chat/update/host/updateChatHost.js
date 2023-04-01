@@ -11,9 +11,7 @@ module.exports = async function (req, res) {
     parameterError(req, false);
   }
 
-  const responseMessage = await updateChat(chats);
+  await updateChat(chats, res);
 
-  return {
-    message: responseMessage
-  }
+  return ""
 };
