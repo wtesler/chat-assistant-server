@@ -43,8 +43,6 @@
 async function hostDevelopment(app, port) {
   const os = require('os');
   const https = require('https');
-  const readDevHttpsKey = require("./secrets/specific/readDevHttpsKey");
-  const readDevHttpsCert = require("./secrets/specific/readDevHttpsCert");
 
 
   let host = 'localhost'
@@ -64,9 +62,7 @@ async function hostDevelopment(app, port) {
     }
   }
 
-  const [devHttpsKey, devHttpsCert] = await Promise.all([readDevHttpsKey(), readDevHttpsCert()]) // ['', '']
-
-  const server = https.createServer({key: devHttpsKey, cert: devHttpsCert}, app);
+  const server = https.createServer({key: process.env.DEV_HTTPS_KEY, cert: process.env.DEV_HTTPS_CERT}, app);
 
   server.listen(port, host, () => {
     console.log(`Development server listening on https://${host}:${port}`);

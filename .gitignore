@@ -1,4 +1,5 @@
 host/node_modules/*
 host/ui-debug.log
 host/firebase-debug.log
+host/.env
 .idea/*

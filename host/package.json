@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "startDev": "cross-env NODE_ENV=development nodemon index.js",
+    "startDev": "dotenv -e .env cross-env NODE_ENV=development nodemon index.js",
     "inspectDev": "cross-env NODE_ENV=development node --inspect index.js",
     "lint": "eslint ./"
   },
@@ -19,6 +19,7 @@
   },
   "devDependencies": {
     "cross-env": "7.0.3",
+    "dotenv": "16.0.3",
     "eslint": "8.19.0",
     "eslint-config-google": "0.14.0",
     "eslint-plugin-promise": "6.0.0",

@@ -70,8 +70,4 @@ class OpenAiClient {
   }
 }
 
-module.exports = (async function () {
-  const readOpenAiKey = require("../../secrets/specific/readOpenAiKey");
-  const key = await readOpenAiKey();
-  return new OpenAiClient(key);
-})();
+module.exports = new OpenAiClient(process.env.OPEN_AI_KEY)
