@@ -5,16 +5,14 @@
   "scripts": {
     "start": "node index.js",
     "startDev": "dotenv -e .env cross-env NODE_ENV=development nodemon index.js",
-    "inspectDev": "cross-env NODE_ENV=development node --inspect index.js",
+    "inspectDev": "dotenv -e .env cross-env NODE_ENV=development node --inspect index.js",
     "lint": "eslint ./"
   },
   "dependencies": {
     "cors": "2.8.5",
     "cranny": "3.0.8",
     "express": "4.18.2",
-    "google-cloud-secrets": "1.3.2",
     "google-cloud-report-error": "1.0.0",
-    "https-client": "1.2.0",
     "openai": "3.2.1"
   },
   "devDependencies": {

@@ -23,16 +23,16 @@
       app[type](`/${name}`, func);
       console.log(`${name} | ${type.toUpperCase()}`);
     }
-  }
+  };
 
   hostEndpoints(endpoints);
 
   const port = process.env.PORT || 8080;
 
   if (process.env.NODE_ENV === 'development') {
-    await hostDevelopment(app, port)
+    await hostDevelopment(app, port);
   } else {
-    hostProduction(app, port)
+    hostProduction(app, port);
   }
 
   app.get('/', (req, res) => {
@@ -45,7 +45,7 @@ async function hostDevelopment(app, port) {
   const https = require('https');
 
 
-  let host = 'localhost'
+  let host = 'localhost';
   const networkInterfaces = os.networkInterfaces();
   let foundHost = false;
   for (const devName in networkInterfaces) {
