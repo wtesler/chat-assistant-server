@@ -63,9 +63,13 @@ class OpenAiClient {
         yield tokens.join('')
       }
     } catch (e) {
-      const error = new Error(e.response.statusText)
-      error.code = e.response.status
-      throw error
+      if (e.response && e.response.statusText) {
+        const error = new Error(e.response.statusText)
+        error.code = e.response.status
+        throw error
+      } else {
+        throw e
+      }
     }
   }
 }
