@@ -1,11 +1,11 @@
-# https://hub.docker.com/_/node
+# https://github.com/GoogleContainerTools/distroless
 
 FROM node:16-bullseye-slim AS build
-WORKDIR /usr/src/app
-COPY . /usr/src/app
+COPY . /app
+WORKDIR /app
 RUN npm install --omit=dev
 
-FROM gcr.io/distroless/nodejs:16
-COPY --from=build /usr/src/app /usr/src/app
-WORKDIR /usr/src/app
-CMD [ "index.js" ]
+FROM gcr.io/distroless/nodejs18-debian11
+COPY --from=build /app /app
+WORKDIR /app
+CMD ["index.js"]
