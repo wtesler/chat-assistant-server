@@ -20,7 +20,7 @@ gcloud config set project PROJECT_NAME
 gcloud builds submit --tag gcr.io/will-chat-assistant/chat-assistant-image
 
 #### Deploy Service
-gcloud run deploy chat-assistant-service --image gcr.io/will-chat-assistant/chat-assistant-image --region us-central1
+gcloud run deploy chat-assistant-service --image gcr.io/will-chat-assistant/chat-assistant-image-slim --region us-central1
 
 ## Local Development
 

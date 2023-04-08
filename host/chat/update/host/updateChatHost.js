@@ -11,7 +11,13 @@ module.exports = async function (req, res) {
     parameterError(req, false);
   }
 
-  await updateChat(chats, res);
+  const abortController = new AbortController();
+
+  req.connection.on('close', function() {
+    abortController.abort()
+  });
+
+  await updateChat(chats, abortController.signal, res);
 
   return ""
 };

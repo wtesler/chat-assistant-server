@@ -6,29 +6,10 @@ class OpenAiClient {
     });
   }
 
-  async updateChatSync(chats) {
-    const { OpenAIApi } = require("openai");
+  async* updateChatAsync(chats, abortSignal) {
+    const {OpenAIApi} = require("openai");
     const openai = new OpenAIApi(this.configuration);
 
-    try {
-      const response = await openai.createChatCompletion(
-        {
-          model: 'gpt-3.5-turbo',
-          messages: chats
-        }
-      )
-      const responseMessage = response.choices[0].message.content
-      return responseMessage
-    } catch (e) {
-      const error = new Error(e.response.statusText)
-      error.code = e.response.status
-      throw error
-    }
-  }
-
-  async *updateChatAsync(chats) {
-    const { OpenAIApi } = require("openai");
-    const openai = new OpenAIApi(this.configuration);
 
     try {
       const response = await openai.createChatCompletion(
@@ -39,6 +20,7 @@ class OpenAiClient {
         },
         {
           responseType: 'stream',
+          signal: abortSignal
         },
       )
 
