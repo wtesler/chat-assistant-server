@@ -28,8 +28,10 @@ Use `npm run startDev` from `/host`.
 
 All functions have associated admin files for running the functionality directly.
 
-Create a .env file in host folder. Add DEV_HTTPS_CERT, DEV_HTTPS_KEY, and OPEN_AI_KEY.
-DEV_HTTPS_CERT, DEV_HTTPS_KEY are used to test the server over LAN.
+Create a .env file in host folder. Add `DEV_HTTPS_CERT`, `DEV_HTTPS_KEY`, and `OPEN_AI_KEY`.
+
+`DEV_HTTPS_CERT`, `DEV_HTTPS_KEY` are used to test the server over LAN.
+See https://flaviocopes.com/express-https-self-signed-certificate/
 
 Run if needed:
 npm install -g dotenv-cli
