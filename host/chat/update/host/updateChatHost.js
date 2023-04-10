@@ -1,4 +1,4 @@
-module.exports = async function (req, res) {
+module.exports = async function (req, res, signal) {
   const updateChat = require("../updateChat");
   const {parameterError} = require("cranny");
 
@@ -11,13 +11,7 @@ module.exports = async function (req, res) {
     parameterError(req, false);
   }
 
-  const abortController = new AbortController();
-
-  req.connection.on('close', function() {
-    abortController.abort()
-  });
-
-  await updateChat(chats, abortController.signal, res);
+  await updateChat(chats, signal, res);
 
   return ""
 };
