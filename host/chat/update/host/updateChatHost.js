@@ -1,4 +1,11 @@
-module.exports = async function (req, res, signal) {
+/**
+ *
+ * @param {Request} req
+ * @param {ServerResponse} res
+ * @param {AbortSignal} abortSignal
+ * @returns {Promise<String>}
+ */
+module.exports = async function (req, res, abortSignal) {
   const updateChat = require("../updateChat");
   const {parameterError} = require("cranny");
 
@@ -11,7 +18,7 @@ module.exports = async function (req, res, signal) {
     parameterError(req, false);
   }
 
-  await updateChat(chats, signal, res);
+  await updateChat(chats, abortSignal, res);
 
   return ""
 };

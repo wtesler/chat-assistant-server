@@ -6,6 +6,12 @@ class OpenAiClient {
     });
   }
 
+  /**
+   *
+   * @param {any[]} chats
+   * @param {AbortSignal} abortSignal
+   * @returns {Promise<void>}
+   */
   async* updateChatAsync(chats, abortSignal) {
     const {OpenAIApi} = require("openai");
     const openai = new OpenAIApi(this.configuration);
