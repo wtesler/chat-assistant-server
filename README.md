@@ -33,7 +33,7 @@ Create a .env file in host folder. Add `DEV_HTTPS_CERT`, `DEV_HTTPS_KEY`, and `O
 `DEV_HTTPS_CERT`, `DEV_HTTPS_KEY` are used to test the server over LAN.
 See https://flaviocopes.com/express-https-self-signed-certificate/
 
-Run if needed:
+Run once if needed:
 npm install -g dotenv-cli
 
 ### Google Cloud Storage CORS Support (If needed)
