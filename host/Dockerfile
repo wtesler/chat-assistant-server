@@ -5,7 +5,7 @@ COPY . /app
 WORKDIR /app
 RUN npm install --omit=dev
 
-FROM gcr.io/distroless/nodejs18-debian11
+FROM gcr.io/distroless/nodejs:16
 COPY --from=build /app /app
 WORKDIR /app
 CMD ["index.js"]
