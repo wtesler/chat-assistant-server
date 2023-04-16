@@ -2,10 +2,11 @@
  *
  * @param {Request} req
  * @param {ServerResponse} res
+ * @param {User} user
  * @param {AbortSignal} abortSignal
  * @returns {Promise<String>}
  */
-module.exports = async function (req, res, abortSignal) {
+module.exports = async function (req, res, user, abortSignal) {
   const updateChat = require("../updateChat");
   const {parameterError} = require("cranny");
 

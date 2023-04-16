@@ -28,7 +28,8 @@ Use `npm run startDev` from `/host`.
 
 All functions have associated admin files for running the functionality directly.
 
-Create a .env file in host folder. Add `DEV_HTTPS_CERT`, `DEV_HTTPS_KEY`, and `OPEN_AI_KEY`.
+Create a .env file in host folder. Add `DEV_HTTPS_CERT`, `DEV_HTTPS_KEY`, `FIREBASE_SERVICE_ACCOUNT`, and `OPEN_AI_KEY`.
+Note you should remove the newlines from `FIREBASE_SERVICE_ACCOUNT` json string when placing in env file.
 
 `DEV_HTTPS_CERT`, `DEV_HTTPS_KEY` are used to test the server over LAN.
 See https://flaviocopes.com/express-https-self-signed-certificate/

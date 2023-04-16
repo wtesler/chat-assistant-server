@@ -1,10 +1,10 @@
 (async function () {
+  require("./environmentSetup")();
+  require("./firebase/firebaseInit")();
+
   const express = require('express');
   const cors = require("cors");
   const {discoverEndpoints} = require("cranny");
-
-  const environmentSetup = require("./environmentSetup");
-  environmentSetup();
 
   const app = express();
 
