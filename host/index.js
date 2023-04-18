@@ -1,6 +1,5 @@
 (async function () {
   require("./environmentSetup")();
-  require("./firebase/firebaseInit")();
 
   const express = require('express');
   const cors = require("cors");

@@ -2,7 +2,7 @@
  *
  * @param {Request} req
  * @param {ServerResponse} res
- * @param {User} user
+ * @param {DecodedIdToken} user
  * @param {AbortSignal} abortSignal
  * @returns {Promise<String>}
  */
@@ -19,7 +19,13 @@ module.exports = async function (req, res, user, abortSignal) {
     parameterError(req, false);
   }
 
-  await updateChat(chats, abortSignal, res);
+  for (const chat of chats) {
+    if (!chat.role || !chat.content) {
+      parameterError(req, false);
+    }
+  }
+
+  await updateChat(chats, user.uid, abortSignal, res);
 
   return ""
 };

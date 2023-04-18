@@ -1,7 +1,5 @@
 (async () => {
-  process.env.NODE_ENV = 'development'
-  require("../../environmentSetup")();
-  require('../../firebase/firebaseInit')();
+  require("../../environmentSetup")(true);
 
   const {readUserRoles} = require('firebase-roles');
 

@@ -9,20 +9,31 @@ class OpenAiClient {
   /**
    *
    * @param {any[]} chats
+   * @param {String} uid
    * @param {AbortSignal} abortSignal
    * @returns {Promise<void>}
    */
-  async* updateChatAsync(chats, abortSignal) {
+  async* updateChatAsync(chats, uid, abortSignal) {
     const {OpenAIApi} = require("openai");
+    const {encode} = require('gpt-3-encoder')
+
     const openai = new OpenAIApi(this.configuration);
 
+    let fullTextResponse = ''
+
+    let numInputTokens = 0
+    for (const chat of chats) {
+      const chatTokens = encode(chat.content)
+      numInputTokens += chatTokens.length
+    }
 
     try {
       const response = await openai.createChatCompletion(
         {
           model: 'gpt-3.5-turbo',
           messages: chats,
-          stream: true
+          stream: true,
+          user: uid
         },
         {
           responseType: 'stream',
@@ -33,7 +44,7 @@ class OpenAiClient {
       for await (const chunk of response.data) {
         const lines = chunk.toString().split('\n').filter((line) => line.trim().startsWith('data: '))
 
-        const tokens = []
+        const contentBatch = []
 
         for (const line of lines) {
           const message = line.replace(/^data: /, '')
@@ -42,13 +53,17 @@ class OpenAiClient {
           }
 
           const json = JSON.parse(message)
-          const token = json.choices[0].delta.content
-          if (token) {
-            tokens.push(token)
+          const content = json.choices[0].delta.content
+          if (content) {
+            contentBatch.push(content)
           }
         }
 
-        yield tokens.join('')
+        const text = contentBatch.join('')
+
+        fullTextResponse += text
+
+        yield text
       }
     } catch (e) {
       if (e.response && e.response.statusText) {
@@ -58,6 +73,13 @@ class OpenAiClient {
       } else {
         throw e
       }
+    } finally {
+      const responseTokens = encode(fullTextResponse)
+      const numResponseTokens = responseTokens.length
+      const numTokens = numInputTokens + numResponseTokens
+
+      const incrementUsage = require('../../usage/incrementUsage')
+      await incrementUsage(uid, numTokens)
     }
   }
 }

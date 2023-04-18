@@ -1,7 +1,5 @@
 (async () => {
-  process.env.NODE_ENV = 'development'
-  require("../../environmentSetup")();
-  require('../../firebase/firebaseInit')();
+  require("../../environmentSetup")(true);
 
   const UID = 'UN92M297SDbuXGBNmcseF5tjwk23';
   const ROLES = ['admin', 'editor'];
