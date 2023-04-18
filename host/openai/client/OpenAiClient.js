@@ -1,25 +1,15 @@
 class OpenAiClient {
-  constructor(apiKey) {
-    const {Configuration} = require("openai");
-    this.configuration = new Configuration({
-      apiKey: apiKey,
-    });
-  }
 
   /**
-   *
    * @param {any[]} chats
+   * @param {function(string)} onContent
    * @param {String} uid
    * @param {AbortSignal} abortSignal
    * @returns {Promise<void>}
    */
-  async* updateChatAsync(chats, uid, abortSignal) {
-    const {OpenAIApi} = require("openai");
-    const {encode} = require('gpt-3-encoder')
-
-    const openai = new OpenAIApi(this.configuration);
-
-    let fullTextResponse = ''
+  async updateChat(chats, onContent, uid, abortSignal) {
+    const request = require('https-client');
+    const {encode} = require("gpt-3-encoder");
 
     let numInputTokens = 0
     for (const chat of chats) {
@@ -27,52 +17,32 @@ class OpenAiClient {
       numInputTokens += chatTokens.length
     }
 
+    const body = {
+      model: 'gpt-3.5-turbo',
+      messages: chats,
+      stream: true,
+      user: uid
+    };
+
+    const headers = {
+      Authorization: `Bearer ${process.env.OPEN_AI_KEY}`
+    };
+
+    const options = {response: 20000, deadline: 120000, verbose: false};
+
+    let fullTextResponse = "";
+    const onInternalContent = content => {
+      fullTextResponse += content;
+    }
+
+    const onChunk = this._createChunkListener(onContent, onInternalContent)
+
+    let response = {}
+
     try {
-      const response = await openai.createChatCompletion(
-        {
-          model: 'gpt-3.5-turbo',
-          messages: chats,
-          stream: true,
-          user: uid
-        },
-        {
-          responseType: 'stream',
-          signal: abortSignal
-        },
-      )
-
-      for await (const chunk of response.data) {
-        const lines = chunk.toString().split('\n').filter((line) => line.trim().startsWith('data: '))
-
-        const contentBatch = []
-
-        for (const line of lines) {
-          const message = line.replace(/^data: /, '')
-          if (message === '[DONE]') {
-            break
-          }
-
-          const json = JSON.parse(message)
-          const content = json.choices[0].delta.content
-          if (content) {
-            contentBatch.push(content)
-          }
-        }
-
-        const text = contentBatch.join('')
-
-        fullTextResponse += text
-
-        yield text
-      }
+      response = await request('POST', '/v1/chat/completions', 'api.openai.com', body, headers, options, abortSignal, onChunk);
     } catch (e) {
-      if (e.response && e.response.statusText) {
-        const error = new Error(e.response.statusText)
-        error.code = e.response.status
-        throw error
-      } else {
-        throw e
-      }
+      throw e
     } finally {
       const responseTokens = encode(fullTextResponse)
       const numResponseTokens = responseTokens.length
@@ -81,7 +51,64 @@ class OpenAiClient {
       const incrementUsage = require('../../usage/incrementUsage')
       await incrementUsage(uid, numTokens)
     }
+
+    return response;
+  }
+
+  _createChunkListener(onContent, onInternalContent) {
+    return chunk => {
+      const objects = this._decodeChunk(chunk)
+      let overallContent = '';
+      for (const obj of objects) {
+        if (!obj.choices) {
+          if (obj.error) {
+            const error = new Error(obj.error.code)
+            if (obj.error.code === 'invalid_api_key') {
+              error.statusCode = 401
+            }
+            throw error;
+          } else {
+            throw new Error("Unexpected error with OpenAI client.")
+          }
+        }
+        const content = obj.choices[0].delta.content;
+        if (content) {
+          overallContent += content;
+        }
+      }
+      onContent(overallContent, onInternalContent)
+    }
+  }
+
+  _decodeChunk(chunk) {
+    const chunkStr = chunk.toString()
+    const objects = [];
+    let depth = 0;
+    let startIndex = -1
+    let inQuotes = false
+    for (let i = 0; i < chunkStr.length; i++) {
+      const char = chunkStr[i];
+      if (char === '{' && !inQuotes) {
+        if (depth === 0) {
+          startIndex = i;
+        }
+        depth++
+      }
+      if (char === '}' && !inQuotes) {
+        depth--
+        if (depth === 0) {
+          const str = chunkStr.substring(startIndex, i + 1)
+          const obj = JSON.parse(str)
+          objects.push(obj)
+        }
+      }
+      const isRealQuote = char === '"' && chunkStr[i - 1] !== '\\'
+      if (isRealQuote) {
+        inQuotes = !inQuotes
+      }
+    }
+    return objects;
   }
 }
 
-module.exports = new OpenAiClient(process.env.OPEN_AI_KEY)
+module.exports = new OpenAiClient()

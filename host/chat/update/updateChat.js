@@ -13,7 +13,9 @@ module.exports = async function (chats, uid, abortSignal, res) {
     chats = chats.slice(chats.length - 20, chats.length)
   }
 
-  for await (const tokens of openAiClient.updateChatAsync(chats, uid, abortSignal)) {
-    res.write(tokens)
+  const onContent = content => {
+    res.write(content)
   }
+
+  await openAiClient.updateChat(chats, onContent, uid, abortSignal)
 }
