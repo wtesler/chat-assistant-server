@@ -16,6 +16,7 @@
     "firebase-roles": "1.5.0",
     "gpt-3-encoder": "1.1.4",
     "google-cloud-report-error": "1.0.0",
+    "https-client": "1.2.1",
     "openai": "3.2.1"
   },
   "devDependencies": {
