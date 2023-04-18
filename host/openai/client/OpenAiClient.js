@@ -76,7 +76,8 @@ class OpenAiClient {
           overallContent += content;
         }
       }
-      onContent(overallContent, onInternalContent)
+      onContent(overallContent)
+      onInternalContent(overallContent)
     }
   }
 
