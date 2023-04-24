@@ -11,10 +11,12 @@ class OpenAiClient {
     const request = require('https-client');
     const {encode} = require("gpt-3-encoder");
 
-    let numInputTokens = 0
+    this._cleanseChats(chats);
+
+    let numInputTokens = 0;
     for (const chat of chats) {
-      const chatTokens = encode(chat.content)
-      numInputTokens += chatTokens.length
+      const chatTokens = encode(chat.content);
+      numInputTokens += chatTokens.length;
     }
 
     const body = {
@@ -33,23 +35,23 @@ class OpenAiClient {
     let fullTextResponse = "";
     const onInternalContent = content => {
       fullTextResponse += content;
-    }
+    };
 
-    const onChunk = this._createChunkListener(onContent, onInternalContent)
+    const onChunk = this._createChunkListener(onContent, onInternalContent);
 
-    let response = {}
+    let response = {};
 
     try {
       response = await request('POST', '/v1/chat/completions', 'api.openai.com', body, headers, options, abortSignal, onChunk);
     } catch (e) {
       throw e
     } finally {
-      const responseTokens = encode(fullTextResponse)
-      const numResponseTokens = responseTokens.length
-      const numTokens = numInputTokens + numResponseTokens
+      const responseTokens = encode(fullTextResponse);
+      const numResponseTokens = responseTokens.length;
+      const numTokens = numInputTokens + numResponseTokens;
 
-      const incrementUsage = require('../../usage/incrementUsage')
-      await incrementUsage(uid, numTokens)
+      const incrementUsage = require('../../usage/incrementUsage');
+      await incrementUsage(uid, numTokens);
     }
 
     return response;
@@ -62,10 +64,12 @@ class OpenAiClient {
       for (const obj of objects) {
         if (!obj.choices) {
           if (obj.error) {
-            console.error(obj.error)
-            const error = new Error(obj.error.code)
-            if (obj.error.code === 'invalid_api_key') {
-              error.statusCode = 401
+            const error = new Error(obj.error.message);
+            const type = obj.error.type;
+            if (type === 'invalid_api_key') {
+              error.statusCode = 401;
+            } else {
+              error.statusCode = obj.error.code ?? 500;
             }
             throw error;
           } else {
@@ -77,39 +81,50 @@ class OpenAiClient {
           overallContent += content;
         }
       }
-      onContent(overallContent)
-      onInternalContent(overallContent)
+      onContent(overallContent);
+      onInternalContent(overallContent);
     }
   }
 
   _decodeChunk(chunk) {
-    const chunkStr = chunk.toString()
+    const chunkStr = chunk.toString();
     const objects = [];
     let depth = 0;
-    let startIndex = -1
-    let inQuotes = false
+    let startIndex = -1;
+    let inQuotes = false;
     for (let i = 0; i < chunkStr.length; i++) {
       const char = chunkStr[i];
       if (char === '{' && !inQuotes) {
         if (depth === 0) {
           startIndex = i;
         }
-        depth++
+        depth++;
       }
       if (char === '}' && !inQuotes) {
-        depth--
+        depth--;
         if (depth === 0) {
-          const str = chunkStr.substring(startIndex, i + 1)
-          const obj = JSON.parse(str)
-          objects.push(obj)
+          const str = chunkStr.substring(startIndex, i + 1);
+          const obj = JSON.parse(str);
+          objects.push(obj);
         }
       }
-      const isRealQuote = char === '"' && chunkStr[i - 1] !== '\\'
+      const isRealQuote = char === '"' && chunkStr[i - 1] !== '\\';
       if (isRealQuote) {
-        inQuotes = !inQuotes
+        inQuotes = !inQuotes;
       }
     }
     return objects;
+  }
+
+  _cleanseChats(chats) {
+    for (const chat of chats) {
+      // Replace invalid characters which cause chat to fail.
+      chat.content = chat.content
+        .replace(/[\u2018\u2019]/g, "'")
+        .replace(/[\u201C\u201D]/g, '"')
+        .replace(/[\u2013\u2014]/g, '-')
+        .replace(/\u2026/g, '...')
+    }
   }
 }
 
