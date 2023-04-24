@@ -9,9 +9,7 @@ class OpenAiClient {
    */
   async updateChat(chats, onContent, uid, abortSignal) {
     const request = require('https-client');
-    const {encode} = require("gpt-3-encoder");
-
-    this._cleanseChats(chats);
+    const {encode} = require('gpt-3-encoder');
 
     let numInputTokens = 0;
     for (const chat of chats) {
@@ -73,7 +71,7 @@ class OpenAiClient {
             }
             throw error;
           } else {
-            throw new Error("Unexpected error with OpenAI client.")
+            throw new Error('Unexpected error with OpenAI client.')
           }
         }
         const content = obj.choices[0].delta.content;
@@ -114,17 +112,6 @@ class OpenAiClient {
       }
     }
     return objects;
-  }
-
-  _cleanseChats(chats) {
-    for (const chat of chats) {
-      // Replace invalid characters which cause chat to fail.
-      chat.content = chat.content
-        .replace(/[\u2018\u2019]/g, "'")
-        .replace(/[\u201C\u201D]/g, '"')
-        .replace(/[\u2013\u2014]/g, '-')
-        .replace(/\u2026/g, '...')
-    }
   }
 }
 
