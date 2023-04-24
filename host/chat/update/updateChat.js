@@ -9,8 +9,9 @@
 module.exports = async function (chats, uid, abortSignal, res) {
   const openAiClient = require("../../openai/client/OpenAiClient");
 
-  if (chats.length > 20) {
-    chats = chats.slice(chats.length - 20, chats.length)
+  const MAX_CHAT_LENGTH = 6;
+  if (chats.length > MAX_CHAT_LENGTH) {
+    chats = chats.slice(chats.length - MAX_CHAT_LENGTH, chats.length);
   }
 
   const onContent = content => {

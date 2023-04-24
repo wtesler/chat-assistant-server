@@ -62,6 +62,7 @@ class OpenAiClient {
       for (const obj of objects) {
         if (!obj.choices) {
           if (obj.error) {
+            console.error(obj.error)
             const error = new Error(obj.error.code)
             if (obj.error.code === 'invalid_api_key') {
               error.statusCode = 401
